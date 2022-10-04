@@ -1,0 +1,35 @@
+IMAGE_NAME = "ubuntu/jammy64"
+N = 2
+
+$script = <<-SCRIPT
+echo "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQDtTjF4b9XWIfPb7Hh7a1qCUxTezxNRy2HPfx0pehfgam7rs2guFBKEwoT0marFma2Wqby6dtEaYxNFGGT3uscqdukZ2coQe1fAO9NW1DrrBdQgH5AZSpD6rRQcSGeR4SeMiynFisGTdt4lifuJzlqZ+vLo4O1eMmmIwOZ7pvvza95iE5jFNUK5sCcIdPLqF4m6Ppp07SM6vWUOYz9S9foryJ19kL/wJTnig5/6Bfy6hEHXVpNvxLUgqQs+ophWpsRpzuNNrxqUSp6Stu1x30WCAhfjtOyeLPGiPNo9jpFHSuinRxNQEZtT5hSHWkPKNqBcwDkCzeihk+8uzM3VULWD vagrant" >> /home/vagrant/.ssh/authorized_keys
+SCRIPT
+
+Vagrant.configure("2") do |config|
+#    config.ssh.insert_key = true
+	
+
+    config.vm.provider "virtualbox" do |v|
+        v.memory = 2048
+        v.cpus = 2
+    end
+      
+    config.vm.define "k8s-master" do |master|
+	    config.vm.boot_timeout = 60000
+        master.vm.box = IMAGE_NAME
+		master.vm.provision "shell", inline: $script
+        master.vm.network "private_network", ip: "192.168.50.10"
+        master.vm.hostname = "k8s-master"
+		
+    end
+
+    (1..N).each do |i|
+	    config.vm.boot_timeout = 60000
+        config.vm.define "node-#{i}" do |node|
+            node.vm.box = IMAGE_NAME
+			node.vm.provision "shell", inline: $script
+            node.vm.network "private_network", ip: "192.168.50.#{i + 10}"
+            node.vm.hostname = "node-#{i}"
+        end
+    end
+end

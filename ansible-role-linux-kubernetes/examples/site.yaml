@@ -1,0 +1,19 @@
+--- 
+- 
+  become: true
+  hosts: kubemaster
+  remote_user: vagrant
+  roles: 
+    - 
+      role: ansible-role-linux-kubernetes
+  vars_files: 
+    - vars.yaml
+- 
+  become: true
+  hosts: kubeworker
+  remote_user: vagrant
+  roles: 
+    - 
+      role: ansible-role-linux-kubernetes
+  vars_files: 
+    - vars.yaml

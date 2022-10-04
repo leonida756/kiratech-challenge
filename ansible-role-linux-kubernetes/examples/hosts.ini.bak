@@ -1,0 +1,10 @@
+[kubernetes:children]
+kubemaster
+kubeworker
+
+[kubemaster]
+k8s-ubuntu-0 ansible_host=192.168.25.110
+
+
+[kubeworker]
+k8s-ubuntu-3 ansible_host=192.168.25.111
